@@ -2,6 +2,11 @@ package org.example;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
@@ -11,11 +16,63 @@ public class Main {
     private static boolean PERMUTATION_EXISTS = false;
 
     public static void main(String[] args) {
-        System.out.println(oneOrZeroEditsAway("pale", "ple") == true);
-        System.out.println(oneOrZeroEditsAway("ales", "pales") == true);
-        System.out.println(oneOrZeroEditsAway("pales", "pale") == true);
-        System.out.println(oneOrZeroEditsAway("pale", "bale") == true);
-        System.out.println(oneOrZeroEditsAway("pale", "bake") == false);
+//        System.out.println(Arrays.deepToString(rotate90cw(new int[][]{{1, 2, 3, 4, 5}, {6, 7, 8, 9, 10}, {11, 12, 13, 14, 15}, {16, 17, 18, 19, 20}, {21, 22, 23, 24, 25}})));
+        System.out.println(Arrays.deepToString(zeroExplode(new int[][]{{1, 2, 0, 4, 5}, {0, 7, 8, 9, 10}, {11, 12, 13, 14, 0}, {16, 17, 18, 19, 20}})));
+    }
+
+    /**
+     * Given an M by N matrix, if any element is 0, then this shall return a matrix where each columnn and row
+     * that had a 0 in it is transformd to 0's
+     *
+     * @param matrix
+     * @return
+     */
+    private static int[][] zeroExplode(int[][] matrix) {
+        int X = matrix.length;
+        int Y = matrix[0].length;
+
+        Set<Integer> is = new HashSet<>();
+        Set<Integer> js = new HashSet<>();
+
+        for (int i = 0; i < X; i++) {
+            for (int j = 0; j < Y; j++) {
+                if (matrix[i][j] == 0) {
+                    is.add(i);
+                    js.add(j);
+                }
+            }
+        }
+
+        for (int i = 0; i < X; i++) {
+            for (int j = 0; j < Y; j++) {
+                if (is.contains(i) || js.contains(j)) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+
+        return matrix;
+    }
+
+    /**
+     * Takes a N by N matrix and returns it rotated by 90 degrees clockwise
+     *
+     * Assumptions:
+     * rotating by 90 clockwise
+     * matrix is square
+     *
+     * @param ints
+     * @return
+     */
+    private static int[][] rotate90cw(int[][] ints) {
+        int N = ints.length;
+        int[][] result = new int[N][N];
+        for (int i = 0; i < N ; i++) {
+            for (int j = 0; j < N; j++) {
+                result[i][j] = ints[N-j-1][i];
+            }
+        }
+        return result;
     }
 
 
