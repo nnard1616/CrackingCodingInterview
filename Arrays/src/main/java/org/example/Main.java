@@ -17,7 +17,27 @@ public class Main {
 
     public static void main(String[] args) {
 //        System.out.println(Arrays.deepToString(rotate90cw(new int[][]{{1, 2, 3, 4, 5}, {6, 7, 8, 9, 10}, {11, 12, 13, 14, 15}, {16, 17, 18, 19, 20}, {21, 22, 23, 24, 25}})));
-        System.out.println(Arrays.deepToString(zeroExplode(new int[][]{{1, 2, 0, 4, 5}, {0, 7, 8, 9, 10}, {11, 12, 13, 14, 0}, {16, 17, 18, 19, 20}})));
+//        System.out.println(Arrays.deepToString(zeroExplode(new int[][]{{1, 2, 0, 4, 5}, {0, 7, 8, 9, 10}, {11, 12, 13, 14, 0}, {16, 17, 18, 19, 20}})));
+        System.out.println(isRotation("waterbottle", "erbottlewat"));
+        System.out.println(isRotation("waterbottle", "ebottlewat"));
+        System.out.println(isRotation("waterbottle", "rebottlewat"));
+    }
+
+    /**
+     * Given two strings, determine if s2 is a rotation of s1.
+     * @param s1
+     * @param s2
+     * @return
+     */
+    private static boolean isRotation(String s1, String s2) {
+        boolean result = false;
+
+        String repeatedS2 = s2 + s2;
+
+        result = repeatedS2.contains(s1);
+
+
+        return result;
     }
 
     /**
