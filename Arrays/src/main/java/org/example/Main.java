@@ -248,4 +248,40 @@ public class Main {
     private static boolean zeroEditsAway(String query1, String query2) {
         return query1.equals(query2);
     }
+
+    /**
+     * given a string, reduce to a compressed string that prints each  character
+     * and its number of repeitions in sequence in the original string.
+     *
+     * If the compressed string is not shorter than the original string, return the original string.
+     *
+     * Assumptions: only upper case and lower case english characters.
+     * lower case letters are distinct from upper case letters
+     *
+     * @param input
+     * @return
+     */
+    private static String compress(String input) {
+        StringBuilder result = new StringBuilder();
+
+        char currentCharacter = input.charAt(0);
+        int currentCharacterCount = 0;
+        for (int i = 0; i < input.length(); i++) {
+            if (input.charAt(i) == currentCharacter) {
+                currentCharacterCount++;
+            } else {
+                result.append(currentCharacter).append(currentCharacterCount);
+                currentCharacter = input.charAt(i);
+                currentCharacterCount = 1;
+            }
+        }
+
+        result.append(currentCharacter).append(currentCharacterCount);
+
+        if (result.length() < input.length()) {
+            return result.toString();
+        } else {
+            return input;
+        }
+    }
 }
