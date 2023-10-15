@@ -1,9 +1,6 @@
 package org.example;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Iterator;
+import java.util.*;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
@@ -71,32 +68,253 @@ public class Main {
         a2.appendToTail(7);
 
         Node b2 = new Node(9);
+        b2.appendToTail(0);
+        b2.appendToTail(0);
+        b2.appendToTail(0);
         b2.appendToTail(9);
         b2.appendToTail(5);
 
-        System.out.println(sumListsRecursive(a, b));
+
+        Node a3 = new Node(7);
+        a3.appendToTail(1);
+        a3.appendToTail(6);
+        a3.appendToTail(1);
+        a3.appendToTail(7);
+
+        Node b3 = new Node(9);
+        b3.appendToTail(0);
+        b3.appendToTail(0);
+        b3.appendToTail(0);
+        b3.appendToTail(9);
+        b3.appendToTail(5);
+
+        Node c3 = new Node(7);
+        c3.appendToTail(1);
+        c3.appendToTail(1);
+        c3.appendToTail(7);
+
+        Node d3 = new Node(7);
+
+        Node e3 = new Node(7);
+        e3.appendToTail(7);
+
+        Node f3 = new Node(7);
+        f3.appendToTail(1);
+
+
+        Node a4 = new Node(0);
+        a4.appendToTail(1);
+        a4.next.next = f3;
+
+        Node b4 = new Node(7);
+        b4.appendToTail(3);
+        b4.appendToTail(4);
+        b4.next.next.next = f3;
+
+        Node a5 = a4;
+        a5.next.next.next.next = b4;
+
+        System.out.println(getCycleStart(c3));
+        System.out.println(getCycleStart(a5));
+
     }
 
-    private static Node sumListsRecursive(Node a, Node b) {
-        if (null == a.next && null == b.next) {
-            return new Node(a.data + b.data);
-        }
-//        if (null == a.next && null != b.next) {
-//            return sumListsRecursive(a, b.next);
+    private static Integer getCycleStart(Node head) {
+        Integer result = null ;
+
+
+        // O(n) time, O(n) additional space
+//        HashSet<Node> memo = new HashSet<>();
+//        while (!memo.contains(head) && null != head) {
+//            System.out.println(head.data);
+//            memo.add(head);
+//            head = head.next;
 //        }
-//        if (null != a.next && null == b.next) {
-//            return sumListsRecursive(a.next, b);
+//
+//        if (null != head){
+//            result = head.data;
+//
 //        }
 
-        Node result = sumListsRecursive(a.next, b.next);
+        Node slow = head;
+        Node fast = head;
+
+        do {
+            if (null != slow && null != fast && null != fast.next) {
+                slow = slow.next;
+                fast = fast.next.next;
+            } else {
+                break;
+            }
+        } while (null != slow && null != fast && slow != fast);
+
+        if (null == fast || null == slow) {
+            return null;
+        }
+        if (slow == fast) {
+            slow = head;
+        }
+
+        while (slow != fast) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        result = slow.data;
+
+        return result;
+    }
+
+    private static Node findIntersectionNode(Node first, Node second) {
+        Node result = null;
+
+
+        //O(ab) solution
+
+//        Node secondHead = second;
+//        while (null != first) {
+//            while (null != second) {
+//                if (first == second) {
+//                    result = first;
+//                    return result;
+//                }
+//                second = second.next;
+//            }
+//            second = secondHead;
+//            first = first.next;
+//        }
+
+
+        // O(a+b) time, O(a) additional space solution
+        HashSet<Node> memo = new HashSet<>();
+        while (null != first) {
+            memo.add(first);
+            first = first.next;
+        }
+        while (null != second) {
+            if (memo.contains(second)) {
+                result = second;
+                break;
+            }
+            second = second.next;
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Determines if singly linked list, given by its head node, is a palindrome
+     *
+     * base cases:
+     * List of one elment is palindrome
+     * List of two identical elements is palindrome
+     *
+     * general cases:
+     * List with even number of elements, n, is a palindrome when indices 0..(n-1)/2 == reversed((n-1)/2 + 1 .. n-1)
+     * List with odd number of elements, n, is a palindrome when indices 0..(n-1)/2 - 1 == reversed((n-1)/2 + 1 .. n-1)
+     *
+     * @param head
+     * @return
+     */
+    private static boolean isPalindrome(Node head) {
+        boolean result = true;
+        Integer length = getLength(head);
+        Stack<Integer> buffer = new Stack<>();
+        Integer popped;
+
+        for (int i = 0; i < length; i++) {
+
+            if (isEven(length)) {
+                if (i <= (length -1) / 2 ) {
+                    buffer.push(head.data);
+                } else {
+                    popped = buffer.pop();
+                    if (popped != head.data) {
+                        result = false;
+                        break;
+                    }
+                }
+            } else { // odd length
+                if (i <= (length -1) / 2 - 1) {
+                    buffer.push(head.data);
+                } else if (i == (length -1) / 2 ){ //middle value
+                    ;
+                } else {
+                    popped = buffer.pop();
+                    if (popped != head.data) {
+                        result = false;
+                        break;
+                    }
+                }
+            }
+
+            head = head.next;
+        }
+
+
+        return result;
+    }
+
+    private static boolean isEven(Integer value) {
+        return value % 2 == 0;
+    }
+
+    private static Node sumListsForward(Node a, Node b) {
+        Integer aLength = getLength(a);
+        Integer bLength = getLength(b);
+
+        while (aLength < bLength ) {
+            Node aNewHead = new Node(0);
+            aNewHead.next = a;
+            a = aNewHead;
+            aLength++;
+        }
+
+        while (aLength > bLength) {
+            Node bNewHead = new Node(0);
+            bNewHead.next = b;
+            b = bNewHead;
+            bLength++;
+        }
+        System.out.println(a);
+        System.out.println(b);
+
+
+
+        Node result = sumListsRecursiveHelper(a, b);
+
+        //final carry the 1
         if (result.data >= 10) {
-            result.data -= 10;
             Node newHead = new Node(1);
+            result.data -= 10;
             newHead.next = result;
             result = newHead;
         }
 
         return result;
+    }
+
+    /**
+     * Assume a and b are of thh same length
+     * @param a
+     * @param b
+     * @return
+     */
+    private static Node sumListsRecursiveHelper(Node a, Node b) {
+        if (null == a.next && null == b.next) {
+            return new Node(a.data + b.data);
+        }
+
+        Node tail = sumListsRecursiveHelper(a.next, b.next);
+        Node head = new Node(a.data + b.data);
+        head.next = tail;
+
+        // carry the 1
+        if (tail.data >= 10) {
+            tail.data -= 10;
+            head.data++;
+        }
+        return head;
     }
 
     private static Node sumLists(Node a, Node b) {
