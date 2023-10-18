@@ -117,6 +117,8 @@ public class Main {
         System.out.println(getCycleStart(c3));
         System.out.println(getCycleStart(a5));
 
+        System.out.println(Math.round(Math.pow(2,3)));
+
     }
 
     private static Integer getCycleStart(Node head) {

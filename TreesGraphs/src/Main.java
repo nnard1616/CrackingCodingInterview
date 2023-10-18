@@ -17,81 +17,120 @@ public class Main {
         }
     }
 
-    private static class Tree<T extends Comparable<T>> {
-        public T value ;
-        public Tree<T> parent = null ;
-        public Tree<T> leftChild = null ;
-        public Tree<T> rightChild = null ;
+    private static class TreeNode<T extends Comparable<T>> {
+        public T data;
 
-        public Tree(T value) {
-            this.value = value;
+        public TreeNode(T data) {
+            this.data = data;
         }
 
-        public Tree() {
-            this(null);
-        }
+        public TreeNode<T> left = null ;
 
-        public boolean addChildBalanced(Tree<T> tree) {
-            boolean result = false;
+        public TreeNode<T> right = null ;
 
-            if (null == leftChild) {
-                leftChild = tree;
-                leftChild.parent = this;
-                result = true;
-            } else if (null == rightChild) {
-                rightChild = tree;
-                rightChild.parent = this;
-                result = true;
-            }
-
-            return result;
-        }
-
-        public boolean add(T item) {
-            boolean result = false;
-            if (null == this.value) {
-                this.value = item;
-                result = true;
-            } else {
-                Tree<T> nextTree = new Tree<>(item);  //uhhhh
-                result =  addChildBalanced(nextTree);
-                if (result) {
-                    nextTree.parent = this;
-                } else {
-                    result = leftChild.add(item);
-                    if (!result) {
-                        result = rightChild.add(item);
-                    }
-                }
-            }
-            return result;
-        }
-
-        public void swapWithParent() {
-            T temp = this.value;
-            this.value = parent.value;
-            parent.value = temp;
-        }
-
-        public void swapWithLeftChild() {
-            T temp = this.value;
-            this.value = leftChild.value;
-            leftChild.value = temp;
-        }
-
-        public void swapWithRightChild() {
-            T temp = this.value;
-            this.value = rightChild.value;
-            rightChild.value = temp;
-        }
-
-        @Override
         public String toString() {
-            String result = this.value.toString() + ": " +
+            return data.toString();
+        }
+
+        public String allToString() {
+            String result = this.data.toString() + ": ";
+
+            if (null != left) {
+                result += "L: " + left.data.toString() + ", ";
+            }
+
+            if (null != right) {
+                result += "R: " + right.data.toString() + ", ";
+            }
+
+            if (null != left) {
+                result += "\n" + left.allToString();
+            }
+
+            if (null != right) {
+                result += "\n" + right.allToString();
+            }
 
             return result;
+
         }
     }
+
+//    private static class Tree<T extends Comparable<T>> {
+//        public T value ;
+//        public Tree<T> parent = null ;
+//        public Tree<T> leftChild = null ;
+//        public Tree<T> rightChild = null ;
+//
+//        public Tree(T value) {
+//            this.value = value;
+//        }
+//
+//        public Tree() {
+//            this(null);
+//        }
+//
+//        public boolean addChildBalanced(Tree<T> tree) {
+//            boolean result = false;
+//
+//            if (null == leftChild) {
+//                leftChild = tree;
+//                leftChild.parent = this;
+//                result = true;
+//            } else if (null == rightChild) {
+//                rightChild = tree;
+//                rightChild.parent = this;
+//                result = true;
+//            }
+//
+//            return result;
+//        }
+//
+//        public boolean add(T item) {
+//            boolean result = false;
+//            if (null == this.value) {
+//                this.value = item;
+//                result = true;
+//            } else {
+//                Tree<T> nextTree = new Tree<>(item);  //uhhhh
+//                result =  addChildBalanced(nextTree);
+//                if (result) {
+//                    nextTree.parent = this;
+//                } else {
+//                    result = leftChild.add(item);
+//                    if (!result) {
+//                        result = rightChild.add(item);
+//                    }
+//                }
+//            }
+//            return result;
+//        }
+//
+//        public void swapWithParent() {
+//            T temp = this.value;
+//            this.value = parent.value;
+//            parent.value = temp;
+//        }
+//
+//        public void swapWithLeftChild() {
+//            T temp = this.value;
+//            this.value = leftChild.value;
+//            leftChild.value = temp;
+//        }
+//
+//        public void swapWithRightChild() {
+//            T temp = this.value;
+//            this.value = rightChild.value;
+//            rightChild.value = temp;
+//        }
+//
+//        @Override
+//        public String toString() {
+//            String result = this.value.toString() + ": " +
+//
+//            return result;
+//        }
+//    }
 
     private static class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
         public T data;
@@ -164,8 +203,105 @@ public class Main {
         System.out.println(pathExists(c, a));
         System.out.println(pathExists(e, f));
 
-        System.out.println(new ArrayList<Integer>(List.of(1,2,3,4,5,6,7,8,9,10, 11, 12)));
+        ArrayList<Integer> arr = new ArrayList<>(List.of(1,2,3,4,5,6,7,8,9,10, 11, 12));
+        System.out.println(arr);
 
+        TreeNode<Integer> btree = createMinimalBST(arr);
+        System.out.println(btree);
+
+        ArrayList<LinkedList<TreeNode<Integer>>> depths = createLevelLinkedList(btree);
+
+
+        System.out.println(depths);
+        System.out.println(checkBalanced(btree));
+        System.out.println(getHeight(btree));
+
+        btree.right.right.right.right = new TreeNode<Integer>(69);
+        System.out.println(checkBalanced(btree));
+        System.out.println(getHeight(btree));
+        btree.right.right.right.right.right = new TreeNode<Integer>(72);
+        System.out.println(checkBalanced(btree));
+        System.out.println(getHeight(btree));
+
+
+
+    }
+
+    private static ArrayList<LinkedList<Integer>> createDepthLists(TreeNode<Integer> btree) {
+        ArrayList<LinkedList<Integer>> result = new ArrayList<>();
+        Queue<TreeNode<Integer>> processor = new ConcurrentLinkedQueue<>();
+        HashMap<Integer, Integer> levelTracker = new HashMap<>();
+
+        processor.add(btree) ;
+        TreeNode<Integer> root ;
+
+        int level = 0;
+        levelTracker.put(0, 1);
+
+        while (!processor.isEmpty()) {
+            if (null == levelTracker.get(level+1)) {
+                levelTracker.put(level+1, (int) Math.pow(2, level+1));
+            }
+            root = processor.remove();
+            try {
+                result.get(level).add(root.data);
+            } catch (IndexOutOfBoundsException e) {
+                result.add(level, new LinkedList<Integer>());
+                result.get(level).add(root.data);
+            }
+
+
+            if (null != root.left) {
+                processor.add(root.left);
+            } else {
+                levelTracker.put(level+1, levelTracker.get(level+1) - 1);
+            }
+            if (null != root.right) {
+                processor.add(root.right);
+            } else {
+                levelTracker.put(level+1, levelTracker.get(level+1) - 1);
+            }
+
+
+
+            levelTracker.put(level, levelTracker.get(level) - 1) ;
+
+            if (levelTracker.get(level).equals(0)) {
+                level++;
+            }
+        }
+
+
+
+
+        return result;
+    }
+
+    public static ArrayList<LinkedList<TreeNode<Integer>>> createLevelLinkedList(TreeNode<Integer> root) {
+        ArrayList<LinkedList<TreeNode<Integer>>> result = new ArrayList<>();
+        LinkedList<TreeNode<Integer>> current = new LinkedList<>();
+        if (root != null) {
+            current.add(root);
+        }
+
+        while(current.size() > 0) {
+            result.add(current);
+            LinkedList<TreeNode<Integer>> parents = current;
+            current = new LinkedList<TreeNode<Integer>>();
+
+            for (TreeNode<Integer> parent : parents) {
+                if (null != parent.left){
+                    current.add(parent.left);
+                }
+                if (null != parent.right){
+                    current.add(parent.right);
+                }
+            }
+
+        }
+
+
+        return result;
     }
 
     /**
@@ -206,17 +342,45 @@ public class Main {
         return false;
     }
 
+    public static TreeNode<Integer> createMinimalBST(ArrayList<Integer> array) {
+        return createMinimalBST(array, 0, array.size() - 1);
+    }
+
+    public static TreeNode<Integer>  createMinimalBST(ArrayList<Integer> array, int start, int end) {
+        if (end < start) {
+            return null;
+        }
+        int mid = (start + end) / 2;
+        TreeNode<Integer> n = new TreeNode<>(array.get(mid));
+        n.left = createMinimalBST(array, start, mid-1);
+        n.right = createMinimalBST(array, mid+1, end);
+        return n;
+    }
+
+    public static boolean checkBalanced(TreeNode<Integer> root) {
+        ArrayList<LinkedList<TreeNode<Integer>>> depths = createLevelLinkedList(root);
 
 
-    public Graph<Integer> createBinarySearchTree(ArrayList<Integer> sortedArray) {
-        Tree<Integer> result = new Tree<>();
+        Integer leftHeight;
+        Integer rightHeight;
 
-        for (Integer i : sortedArray) {
-            Tree<Integer> tree = new Tree<>(i);
+        for (LinkedList<TreeNode<Integer>> list : depths) {
+            for (TreeNode<Integer> node : list) {
+                leftHeight = getHeight(node.left);
+                rightHeight = getHeight(node.right);
+                if (Math.abs(leftHeight - rightHeight) >  1) {
+                    return false;
+                }
+            }
         }
 
+        return true;
+    }
 
-
-        return result;
+    private static Integer getHeight(TreeNode<Integer> root) {
+        if (null == root) {
+            return 0;
+        }
+        return Math.max(getHeight(root.left), getHeight(root.right)) + 1;
     }
 }
