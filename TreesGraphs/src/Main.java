@@ -6,6 +6,24 @@ public class Main {
     private static class Graph<T extends Comparable<T>> {
         private ArrayList<Node<T>> nodes = new ArrayList<>();
 
+        public void removeFalseNodes() {
+            Iterator<Node<T>> it = nodes.iterator();
+
+            while (it.hasNext()) {
+                if (!it.next().marked) {
+                    it.remove();
+                }
+            }
+        }
+
+        public void resetNodes() {
+            Iterator<Node<T>> it = nodes.iterator();
+
+            while (it.hasNext()) {
+                it.next().marked = false;
+            }
+        }
+
         public String  toString() {
             String result = "";
 
@@ -20,6 +38,8 @@ public class Main {
     private static class TreeNode<T extends Comparable<T>> {
         public T data;
 
+        public TreeNode<T> parent = null;
+
         public TreeNode(T data) {
             this.data = data;
         }
@@ -27,6 +47,21 @@ public class Main {
         public TreeNode<T> left = null ;
 
         public TreeNode<T> right = null ;
+
+        public boolean  marked = false;
+
+        public void setParents() {
+            if (null != left) {
+                left.parent = this;
+                left.setParents();
+            }
+
+            if (null != right) {
+                right.parent = this;
+                right.setParents();
+            }
+
+        }
 
         public String toString() {
             return data.toString();
@@ -55,82 +90,6 @@ public class Main {
 
         }
     }
-
-//    private static class Tree<T extends Comparable<T>> {
-//        public T value ;
-//        public Tree<T> parent = null ;
-//        public Tree<T> leftChild = null ;
-//        public Tree<T> rightChild = null ;
-//
-//        public Tree(T value) {
-//            this.value = value;
-//        }
-//
-//        public Tree() {
-//            this(null);
-//        }
-//
-//        public boolean addChildBalanced(Tree<T> tree) {
-//            boolean result = false;
-//
-//            if (null == leftChild) {
-//                leftChild = tree;
-//                leftChild.parent = this;
-//                result = true;
-//            } else if (null == rightChild) {
-//                rightChild = tree;
-//                rightChild.parent = this;
-//                result = true;
-//            }
-//
-//            return result;
-//        }
-//
-//        public boolean add(T item) {
-//            boolean result = false;
-//            if (null == this.value) {
-//                this.value = item;
-//                result = true;
-//            } else {
-//                Tree<T> nextTree = new Tree<>(item);  //uhhhh
-//                result =  addChildBalanced(nextTree);
-//                if (result) {
-//                    nextTree.parent = this;
-//                } else {
-//                    result = leftChild.add(item);
-//                    if (!result) {
-//                        result = rightChild.add(item);
-//                    }
-//                }
-//            }
-//            return result;
-//        }
-//
-//        public void swapWithParent() {
-//            T temp = this.value;
-//            this.value = parent.value;
-//            parent.value = temp;
-//        }
-//
-//        public void swapWithLeftChild() {
-//            T temp = this.value;
-//            this.value = leftChild.value;
-//            leftChild.value = temp;
-//        }
-//
-//        public void swapWithRightChild() {
-//            T temp = this.value;
-//            this.value = rightChild.value;
-//            rightChild.value = temp;
-//        }
-//
-//        @Override
-//        public String toString() {
-//            String result = this.value.toString() + ": " +
-//
-//            return result;
-//        }
-//    }
 
     private static class Node<T extends Comparable<T>> implements Comparable<Node<T>>{
         public T data;
@@ -169,7 +128,7 @@ public class Main {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
         Node<Integer> a = new Node<>(0);
         Node<Integer> b = new Node<>(1);
         Node<Integer> c = new Node<>(2);
@@ -208,6 +167,11 @@ public class Main {
 
         TreeNode<Integer> btree = createMinimalBST(arr);
         System.out.println(btree);
+        System.out.println(isValidBST(btree));
+
+        btree.setParents();
+
+        System.out.println(getNext(btree.left.right.right));
 
         ArrayList<LinkedList<TreeNode<Integer>>> depths = createLevelLinkedList(btree);
 
@@ -216,15 +180,153 @@ public class Main {
         System.out.println(checkBalanced(btree));
         System.out.println(getHeight(btree));
 
+        System.out.println("Get next: " + getNext(btree.left.right.right));
+        System.out.println("Get next: " + getNext(btree.left.right));
+        System.out.println("Get next: " + getNext(btree.left.left.right));
+        System.out.println("Get next: " + getNext(btree.right));
+
+
+        System.out.println("Common Ancestor: " + getCommonAncestor(btree.right.left.right, btree.right.right.right));
+        System.out.println("Common Ancestor: " + getCommonAncestor(btree.left.left.right, btree.left.right.right));
+        System.out.println("Common Ancestor: " + getCommonAncestor(btree.left.left, btree.left));
+
         btree.right.right.right.right = new TreeNode<Integer>(69);
         System.out.println(checkBalanced(btree));
         System.out.println(getHeight(btree));
+        System.out.println(isValidBST(btree));
         btree.right.right.right.right.right = new TreeNode<Integer>(72);
         System.out.println(checkBalanced(btree));
         System.out.println(getHeight(btree));
+        System.out.println(isValidBST(btree));
+        btree.right.right.right.right.right.right = new TreeNode<Integer>(7);
+        System.out.println(checkBalanced(btree));
+        System.out.println(getHeight(btree));
+        System.out.println(isValidBST(btree));
 
 
 
+        Node<Character> a2 = new Node<>('a');
+        Node<Character> b2 = new Node<>('b');
+        Node<Character> c2 = new Node<>('c');
+        Node<Character> d2 = new Node<>('d');
+        Node<Character> e2 = new Node<>('e');
+        Node<Character> f2 = new Node<>('f');
+
+        a2.addChild(d2);
+
+        b2.addChild(d2);
+
+        d2.addChild(c2);
+//        d2.addChild(f2);
+
+        f2.addChild(a2);
+        f2.addChild(b2);
+
+        Graph<Character> g2 = new Graph<>();
+        g2.nodes.add(a2);
+        g2.nodes.add(b2);
+        g2.nodes.add(c2);
+        g2.nodes.add(d2);
+        g2.nodes.add(e2);
+        g2.nodes.add(f2);
+
+        System.out.println(g2);
+        System.out.println(a2);
+
+        printBuildOrder(g2);
+
+
+
+    }
+
+    private static TreeNode<Integer> getCommonAncestor(TreeNode<Integer> first, TreeNode<Integer> second) {
+
+        while (null != first.parent ) {
+            first.marked = true;
+            first = first.parent;
+        }
+
+        while (null != second.parent ) {
+            if (second.marked) {
+                return second;
+            } else {
+                second.marked = true;
+                second = second.parent;
+            }
+        }
+
+        return null;
+    }
+
+    private static void printBuildOrder(Graph<Character> dependencies) throws Exception{
+        StringBuilder sb = new StringBuilder();
+        Integer nodeCount = dependencies.nodes.size();
+
+        while (!dependencies.nodes.isEmpty()) {
+
+            for (Node<Character> project : dependencies.nodes) {
+                for (Node<Character> dependency : project.children) {
+                    dependency.marked = true;
+                }
+            }
+
+            for (Node<Character> project : dependencies.nodes) {
+                if (!project.marked) {
+                    sb.append(project.data + ", ");
+                }
+            }
+            dependencies.removeFalseNodes();
+            dependencies.resetNodes();
+            if (nodeCount == dependencies.nodes.size()) {
+                throw new Exception("cyclical dependency exists");
+            }
+
+            nodeCount = dependencies.nodes.size();
+        }
+
+        System.out.println(sb.toString());
+
+    }
+
+    private static TreeNode<Integer> getNext(TreeNode<Integer> root) {
+        TreeNode<Integer> result;
+        if (null != root.right) {
+            result = root.right;
+            while (null != result.left) {
+                result = result.left;
+            }
+        } else {
+            result = root.parent;
+            while (result.parent.data < result.data) {
+                result = result.parent;
+            }
+            result = result.parent;
+        }
+
+        return result;
+
+
+    }
+
+    private static boolean isValidBST(TreeNode<Integer> btree) {
+        boolean result = true;
+
+        if (null == btree) {
+            return result;
+        }
+
+        result = isValidBST(btree.left) && isValidBST(btree.right);
+
+        if (null != btree.left){
+            result = result && btree.left.data <= btree.data;
+        }
+
+        if (null != btree.right){
+            result = result && btree.right.data > btree.data;
+        }
+
+
+        return result;
     }
 
     private static ArrayList<LinkedList<Integer>> createDepthLists(TreeNode<Integer> btree) {
