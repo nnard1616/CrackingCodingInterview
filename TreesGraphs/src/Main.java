@@ -198,7 +198,7 @@ public class Main {
         System.out.println(checkBalanced(btree));
         System.out.println(getHeight(btree));
         System.out.println(isValidBST(btree));
-        btree.right.right.right.right.right.right = new TreeNode<Integer>(7);
+        btree.right.right.right.right.right.right = new TreeNode<Integer>(720);
         System.out.println(checkBalanced(btree));
         System.out.println(getHeight(btree));
         System.out.println(isValidBST(btree));
@@ -235,8 +235,56 @@ public class Main {
 
         printBuildOrder(g2);
 
+        TreeNode<Integer> simpleBtree = new TreeNode<Integer>(2);
+        simpleBtree.left = new TreeNode<Integer>(1);
+        simpleBtree.right = new TreeNode<>(3);
 
+        System.out.println(getPossibleOrderings(btree));
 
+    }
+
+    private static ArrayList<ArrayList<Integer>> getPossibleOrderings(TreeNode<Integer> input) {
+
+        if (input.left == null && input.right == null) {
+            return new ArrayList<>(List.of(new ArrayList<>(List.of(input.data))));
+        }
+        if (input.left == null && input.right != null) {
+            ArrayList<ArrayList<Integer>> rightSubs = getPossibleOrderings(input.right);
+            for (ArrayList<Integer> rightSub : rightSubs) {
+                rightSub.addFirst(input.data);
+            }
+            return rightSubs;
+        }
+        if (input.left != null && input.right == null) {
+            ArrayList<ArrayList<Integer>> leftSubs = getPossibleOrderings(input.left);
+            for (ArrayList<Integer> leftSub : leftSubs) {
+                leftSub.addFirst(input.data);
+            }
+            return leftSubs;
+        }
+        if (input.left != null && input.right != null) {
+            ArrayList<ArrayList<Integer>> rightSubs = getPossibleOrderings(input.right);
+            ArrayList<ArrayList<Integer>> leftSubs = getPossibleOrderings(input.left);
+            ArrayList<ArrayList<Integer>> results = new ArrayList<ArrayList<Integer>>();
+            ArrayList<Integer> result;
+            for (ArrayList<Integer> rightSub : rightSubs) {
+                for (ArrayList<Integer> leftSub : leftSubs) {
+                    result = new ArrayList<>(List.of(input.data));
+                    result.addAll(rightSub);
+                    result.addAll(leftSub);
+                    results.add(result);
+
+                    result = new ArrayList<>(List.of(input.data));
+                    result.addAll(leftSub);
+                    result.addAll(rightSub);
+                    results.add(result);
+
+                }
+
+            }
+            return results;
+        }
+        return null;
     }
 
     private static TreeNode<Integer> getCommonAncestor(TreeNode<Integer> first, TreeNode<Integer> second) {
